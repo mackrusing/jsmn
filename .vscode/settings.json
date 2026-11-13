@@ -1,0 +1,27 @@
+{
+  "files.associations": {
+    ".clang*": "yaml"
+  },
+  "[yaml]": {
+    "editor.tabSize": 2,
+    "editor.insertSpaces": true,
+    "editor.indentSize": "tabSize"
+  },
+  "[c]": {
+    "editor.tabSize": 8,
+    "editor.insertSpaces": false,
+    "editor.indentSize": "tabSize"
+  },
+  "files.exclude": {
+    "**/*.d": true,
+    "**/*.o": true,
+    "kernel/kernel": true,
+    "user/_*": true,
+    "user/*.asm": true,
+    "user/*.sym": true,
+    "user/initcode": true,
+    "user/initcode.out": true,
+    "user/usys.S": true,
+    "fs.img": true
+  }
+}
