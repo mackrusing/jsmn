@@ -6,47 +6,27 @@
 #include "test.h"
 #include "testutil.h"
 
-int test_empty(void) {
-	check(parse("{}", 1, 1,
-				JSMN_OBJECT, 0, 2, 0));
-	check(parse("[]", 1, 1,
-				JSMN_ARRAY, 0, 2, 0));
-	check(parse("[{},{}]", 3, 3,
-				JSMN_ARRAY, 0, 7, 2,
-				JSMN_OBJECT, 1, 3, 0,
-				JSMN_OBJECT, 4, 6, 0));
+int
+test_empty(void)
+{
+	check(parse("{}", 1, 1, JSMN_OBJECT, 0, 2, 0));
+	check(parse("[]", 1, 1, JSMN_ARRAY, 0, 2, 0));
+	check(parse("[{},{}]", 3, 3, JSMN_ARRAY, 0, 7, 2, JSMN_OBJECT, 1, 3, 0, JSMN_OBJECT, 4, 6, 0));
 	return 0;
 }
 
-int test_object(void) {
-	check(parse("{\"a\":0}", 3, 3,
-				JSMN_OBJECT, 0, 7, 1,
-				JSMN_STRING, "a", 1,
-				JSMN_PRIMITIVE, "0"));
-	check(parse("{\"a\":[]}", 3, 3,
-				JSMN_OBJECT, 0, 8, 1,
-				JSMN_STRING, "a", 1,
-				JSMN_ARRAY, 5, 7, 0));
-	check(parse("{\"a\":{},\"b\":{}}", 5, 5,
-				JSMN_OBJECT, -1, -1, 2,
-				JSMN_STRING, "a", 1,
-				JSMN_OBJECT, -1, -1, 0,
-				JSMN_STRING, "b", 1,
-				JSMN_OBJECT, -1, -1, 0));
-	check(parse("{\n \"Day\": 26,\n \"Month\": 9,\n \"Year\": 12\n }", 7, 7,
-				JSMN_OBJECT, -1, -1, 3,
-				JSMN_STRING, "Day", 1,
-				JSMN_PRIMITIVE, "26",
-				JSMN_STRING, "Month", 1,
-				JSMN_PRIMITIVE, "9",
-				JSMN_STRING, "Year", 1,
-				JSMN_PRIMITIVE, "12"));
-	check(parse("{\"a\": 0, \"b\": \"c\"}", 5, 5,
-				JSMN_OBJECT, -1, -1, 2,
-				JSMN_STRING, "a", 1,
-				JSMN_PRIMITIVE, "0",
-				JSMN_STRING, "b", 1,
-				JSMN_STRING, "c", 0));
+int
+test_object(void)
+{
+	check(parse("{\"a\":0}", 3, 3, JSMN_OBJECT, 0, 7, 1, JSMN_STRING, "a", 1, JSMN_PRIMITIVE, "0"));
+	check(parse("{\"a\":[]}", 3, 3, JSMN_OBJECT, 0, 8, 1, JSMN_STRING, "a", 1, JSMN_ARRAY, 5, 7, 0));
+	check(parse("{\"a\":{},\"b\":{}}", 5, 5, JSMN_OBJECT, -1, -1, 2, JSMN_STRING, "a", 1, JSMN_OBJECT, -1, -1, 0,
+	            JSMN_STRING, "b", 1, JSMN_OBJECT, -1, -1, 0));
+	check(parse("{\n \"Day\": 26,\n \"Month\": 9,\n \"Year\": 12\n }", 7, 7, JSMN_OBJECT, -1, -1, 3, JSMN_STRING,
+	            "Day", 1, JSMN_PRIMITIVE, "26", JSMN_STRING, "Month", 1, JSMN_PRIMITIVE, "9", JSMN_STRING, "Year",
+	            1, JSMN_PRIMITIVE, "12"));
+	check(parse("{\"a\": 0, \"b\": \"c\"}", 5, 5, JSMN_OBJECT, -1, -1, 2, JSMN_STRING, "a", 1, JSMN_PRIMITIVE, "0",
+	            JSMN_STRING, "b", 1, JSMN_STRING, "c", 0));
 
 #ifdef JSMN_STRICT
 	check(parse("{\"a\"\n0}", JSMN_ERROR_INVAL, 3));
@@ -65,73 +45,50 @@ int test_object(void) {
 	return 0;
 }
 
-int test_array(void) {
+int
+test_array(void)
+{
 	/* FIXME */
 	/*check(parse("[10}", JSMN_ERROR_INVAL, 3));*/
 	/*check(parse("[1,,3]", JSMN_ERROR_INVAL, 3)*/
-	check(parse("[10]", 2, 2,
-				JSMN_ARRAY, -1, -1, 1,
-				JSMN_PRIMITIVE, "10"));
+	check(parse("[10]", 2, 2, JSMN_ARRAY, -1, -1, 1, JSMN_PRIMITIVE, "10"));
 	check(parse("{\"a\": 1]", JSMN_ERROR_INVAL, 3));
 	/* FIXME */
 	/*check(parse("[\"a\": 1]", JSMN_ERROR_INVAL, 3));*/
 	return 0;
 }
 
-int test_primitive(void) {
-	check(parse("{\"boolVar\" : true }", 3, 3,
-				JSMN_OBJECT, -1, -1, 1,
-				JSMN_STRING, "boolVar", 1,
-				JSMN_PRIMITIVE, "true"));
-	check(parse("{\"boolVar\" : false }", 3, 3,
-				JSMN_OBJECT, -1, -1, 1,
-				JSMN_STRING, "boolVar", 1,
-				JSMN_PRIMITIVE, "false"));
-	check(parse("{\"nullVar\" : null }", 3, 3,
-				JSMN_OBJECT, -1, -1, 1,
-				JSMN_STRING, "nullVar", 1,
-				JSMN_PRIMITIVE, "null"));
-	check(parse("{\"intVar\" : 12}", 3, 3,
-				JSMN_OBJECT, -1, -1, 1,
-				JSMN_STRING, "intVar", 1,
-				JSMN_PRIMITIVE, "12"));
-	check(parse("{\"floatVar\" : 12.345}", 3, 3,
-				JSMN_OBJECT, -1, -1, 1,
-				JSMN_STRING, "floatVar", 1,
-				JSMN_PRIMITIVE, "12.345"));
+int
+test_primitive(void)
+{
+	check(parse("{\"boolVar\" : true }", 3, 3, JSMN_OBJECT, -1, -1, 1, JSMN_STRING, "boolVar", 1, JSMN_PRIMITIVE,
+	            "true"));
+	check(parse("{\"boolVar\" : false }", 3, 3, JSMN_OBJECT, -1, -1, 1, JSMN_STRING, "boolVar", 1, JSMN_PRIMITIVE,
+	            "false"));
+	check(parse("{\"nullVar\" : null }", 3, 3, JSMN_OBJECT, -1, -1, 1, JSMN_STRING, "nullVar", 1, JSMN_PRIMITIVE,
+	            "null"));
+	check(parse("{\"intVar\" : 12}", 3, 3, JSMN_OBJECT, -1, -1, 1, JSMN_STRING, "intVar", 1, JSMN_PRIMITIVE, "12"));
+	check(parse("{\"floatVar\" : 12.345}", 3, 3, JSMN_OBJECT, -1, -1, 1, JSMN_STRING, "floatVar", 1, JSMN_PRIMITIVE,
+	            "12.345"));
 	return 0;
 }
 
-int test_string(void) {
-	check(parse("{\"strVar\" : \"hello world\"}", 3, 3,
-				JSMN_OBJECT, -1, -1, 1,
-				JSMN_STRING, "strVar", 1,
-				JSMN_STRING, "hello world", 0));
-	check(parse("{\"strVar\" : \"escapes: \\/\\r\\n\\t\\b\\f\\\"\\\\\"}", 3, 3,
-				JSMN_OBJECT, -1, -1, 1,
-				JSMN_STRING, "strVar", 1,
-				JSMN_STRING, "escapes: \\/\\r\\n\\t\\b\\f\\\"\\\\", 0));
-	check(parse("{\"strVar\": \"\"}", 3, 3,
-				JSMN_OBJECT, -1, -1, 1,
-				JSMN_STRING, "strVar", 1,
-				JSMN_STRING, "", 0));
-	check(parse("{\"a\":\"\\uAbcD\"}", 3, 3,
-				JSMN_OBJECT, -1, -1, 1,
-				JSMN_STRING, "a", 1,
-				JSMN_STRING, "\\uAbcD", 0));
-	check(parse("{\"a\":\"str\\u0000\"}", 3, 3,
-				JSMN_OBJECT, -1, -1, 1,
-				JSMN_STRING, "a", 1,
-				JSMN_STRING, "str\\u0000", 0));
-	check(parse("{\"a\":\"\\uFFFFstr\"}", 3, 3,
-				JSMN_OBJECT, -1, -1, 1,
-				JSMN_STRING, "a", 1,
-				JSMN_STRING, "\\uFFFFstr", 0));
-	check(parse("{\"a\":[\"\\u0280\"]}", 4, 4,
-				JSMN_OBJECT, -1, -1, 1,
-				JSMN_STRING, "a", 1,
-				JSMN_ARRAY, -1, -1, 1,
-				JSMN_STRING, "\\u0280", 0));
+int
+test_string(void)
+{
+	check(parse("{\"strVar\" : \"hello world\"}", 3, 3, JSMN_OBJECT, -1, -1, 1, JSMN_STRING, "strVar", 1,
+	            JSMN_STRING, "hello world", 0));
+	check(parse("{\"strVar\" : \"escapes: \\/\\r\\n\\t\\b\\f\\\"\\\\\"}", 3, 3, JSMN_OBJECT, -1, -1, 1, JSMN_STRING,
+	            "strVar", 1, JSMN_STRING, "escapes: \\/\\r\\n\\t\\b\\f\\\"\\\\", 0));
+	check(parse("{\"strVar\": \"\"}", 3, 3, JSMN_OBJECT, -1, -1, 1, JSMN_STRING, "strVar", 1, JSMN_STRING, "", 0));
+	check(
+	  parse("{\"a\":\"\\uAbcD\"}", 3, 3, JSMN_OBJECT, -1, -1, 1, JSMN_STRING, "a", 1, JSMN_STRING, "\\uAbcD", 0));
+	check(parse("{\"a\":\"str\\u0000\"}", 3, 3, JSMN_OBJECT, -1, -1, 1, JSMN_STRING, "a", 1, JSMN_STRING,
+	            "str\\u0000", 0));
+	check(parse("{\"a\":\"\\uFFFFstr\"}", 3, 3, JSMN_OBJECT, -1, -1, 1, JSMN_STRING, "a", 1, JSMN_STRING,
+	            "\\uFFFFstr", 0));
+	check(parse("{\"a\":[\"\\u0280\"]}", 4, 4, JSMN_OBJECT, -1, -1, 1, JSMN_STRING, "a", 1, JSMN_ARRAY, -1, -1, 1,
+	            JSMN_STRING, "\\u0280", 0));
 
 	check(parse("{\"a\":\"str\\uFFGFstr\"}", JSMN_ERROR_INVAL, 3));
 	check(parse("{\"a\":\"str\\u@FfF\"}", JSMN_ERROR_INVAL, 3));
@@ -139,24 +96,22 @@ int test_string(void) {
 	return 0;
 }
 
-int test_partial_string(void) {
-	int i;
-	int r;
+int
+test_partial_string(void)
+{
+	int         i;
+	int         r;
 	jsmn_parser p;
-	jsmntok_t tok[5];
+	jsmntok_t   tok[5];
 	const char *js = "{\"x\": \"va\\\\ue\", \"y\": \"value y\"}";
 
 	jsmn_init(&p);
 	for (i = 1; i <= strlen(js); i++) {
-		r = jsmn_parse(&p, js, i, tok, sizeof(tok)/sizeof(tok[0]));
+		r = jsmn_parse(&p, js, i, tok, sizeof(tok) / sizeof(tok[0]));
 		if (i == strlen(js)) {
 			check(r == 5);
-			check(tokeq(js, tok, 5,
-					JSMN_OBJECT, -1, -1, 2,
-					JSMN_STRING, "x", 1,
-					JSMN_STRING, "va\\\\ue", 0,
-					JSMN_STRING, "y", 1,
-					JSMN_STRING, "value y", 0));
+			check(tokeq(js, tok, 5, JSMN_OBJECT, -1, -1, 2, JSMN_STRING, "x", 1, JSMN_STRING, "va\\\\ue", 0,
+			            JSMN_STRING, "y", 1, JSMN_STRING, "value y", 0));
 		} else {
 			check(r == JSMN_ERROR_PART);
 		}
@@ -164,26 +119,23 @@ int test_partial_string(void) {
 	return 0;
 }
 
-int test_partial_array(void) {
+int
+test_partial_array(void)
+{
 #ifdef JSMN_STRICT
-	int r;
-	int i;
+	int         r;
+	int         i;
 	jsmn_parser p;
-	jsmntok_t tok[10];
+	jsmntok_t   tok[10];
 	const char *js = "[ 1, true, [123, \"hello\"]]";
 
 	jsmn_init(&p);
 	for (i = 1; i <= strlen(js); i++) {
-		r = jsmn_parse(&p, js, i, tok, sizeof(tok)/sizeof(tok[0]));
+		r = jsmn_parse(&p, js, i, tok, sizeof(tok) / sizeof(tok[0]));
 		if (i == strlen(js)) {
 			check(r == 6);
-			check(tokeq(js, tok, 6,
-					JSMN_ARRAY, -1, -1, 3,
-					JSMN_PRIMITIVE, "1",
-					JSMN_PRIMITIVE, "true",
-					JSMN_ARRAY, -1, -1, 2,
-					JSMN_PRIMITIVE, "123",
-					JSMN_STRING, "hello", 0));
+			check(tokeq(js, tok, 6, JSMN_ARRAY, -1, -1, 3, JSMN_PRIMITIVE, "1", JSMN_PRIMITIVE, "true",
+			            JSMN_ARRAY, -1, -1, 2, JSMN_PRIMITIVE, "123", JSMN_STRING, "hello", 0));
 		} else {
 			check(r == JSMN_ERROR_PART);
 		}
@@ -192,11 +144,13 @@ int test_partial_array(void) {
 	return 0;
 }
 
-int test_array_nomem(void) {
-	int i;
-	int r;
+int
+test_array_nomem(void)
+{
+	int         i;
+	int         r;
 	jsmn_parser p;
-	jsmntok_t toksmall[10], toklarge[10];
+	jsmntok_t   toksmall[10], toklarge[10];
 	const char *js;
 
 	js = "  [ 1, true, [123, \"hello\"]]";
@@ -212,22 +166,19 @@ int test_array_nomem(void) {
 
 		r = jsmn_parse(&p, js, strlen(js), toklarge, 10);
 		check(r >= 0);
-		check(tokeq(js, toklarge, 4,
-					JSMN_ARRAY, -1, -1, 3,
-					JSMN_PRIMITIVE, "1",
-					JSMN_PRIMITIVE, "true",
-					JSMN_ARRAY, -1, -1, 2,
-					JSMN_PRIMITIVE, "123",
-					JSMN_STRING, "hello", 0));
+		check(tokeq(js, toklarge, 4, JSMN_ARRAY, -1, -1, 3, JSMN_PRIMITIVE, "1", JSMN_PRIMITIVE, "true",
+		            JSMN_ARRAY, -1, -1, 2, JSMN_PRIMITIVE, "123", JSMN_STRING, "hello", 0));
 	}
 	return 0;
 }
 
-int test_unquoted_keys(void) {
+int
+test_unquoted_keys(void)
+{
 #ifndef JSMN_STRICT
-	int r;
+	int         r;
 	jsmn_parser p;
-	jsmntok_t tok[10];
+	jsmntok_t   tok[10];
 	const char *js;
 
 	jsmn_init(&p);
@@ -235,61 +186,62 @@ int test_unquoted_keys(void) {
 
 	r = jsmn_parse(&p, js, strlen(js), tok, 10);
 	check(r >= 0);
-	check(tokeq(js, tok, 4,
-				JSMN_PRIMITIVE, "key1",
-				JSMN_STRING, "value", 0,
-				JSMN_PRIMITIVE, "key2",
-				JSMN_PRIMITIVE, "123"));
+	check(tokeq(js, tok, 4, JSMN_PRIMITIVE, "key1", JSMN_STRING, "value", 0, JSMN_PRIMITIVE, "key2", JSMN_PRIMITIVE,
+	            "123"));
 #endif
 	return 0;
 }
 
-int test_issue_22(void) {
-	int r;
+int
+test_issue_22(void)
+{
+	int         r;
 	jsmn_parser p;
-	jsmntok_t tokens[128];
+	jsmntok_t   tokens[128];
 	const char *js;
 
 	js = "{ \"height\":10, \"layers\":[ { \"data\":[6,6], \"height\":10, "
-		"\"name\":\"Calque de Tile 1\", \"opacity\":1, \"type\":\"tilelayer\", "
-		"\"visible\":true, \"width\":10, \"x\":0, \"y\":0 }], "
-		"\"orientation\":\"orthogonal\", \"properties\": { }, \"tileheight\":32, "
-		"\"tilesets\":[ { \"firstgid\":1, \"image\":\"..\\/images\\/tiles.png\", "
-		"\"imageheight\":64, \"imagewidth\":160, \"margin\":0, \"name\":\"Tiles\", "
-		"\"properties\":{}, \"spacing\":0, \"tileheight\":32, \"tilewidth\":32 }], "
-		"\"tilewidth\":32, \"version\":1, \"width\":10 }";
+	     "\"name\":\"Calque de Tile 1\", \"opacity\":1, \"type\":\"tilelayer\", "
+	     "\"visible\":true, \"width\":10, \"x\":0, \"y\":0 }], "
+	     "\"orientation\":\"orthogonal\", \"properties\": { }, \"tileheight\":32, "
+	     "\"tilesets\":[ { \"firstgid\":1, \"image\":\"..\\/images\\/tiles.png\", "
+	     "\"imageheight\":64, \"imagewidth\":160, \"margin\":0, \"name\":\"Tiles\", "
+	     "\"properties\":{}, \"spacing\":0, \"tileheight\":32, \"tilewidth\":32 }], "
+	     "\"tilewidth\":32, \"version\":1, \"width\":10 }";
 	jsmn_init(&p);
 	r = jsmn_parse(&p, js, strlen(js), tokens, 128);
 	check(r >= 0);
 	return 0;
 }
 
-int test_issue_27(void) {
-	const char *js =
-		"{ \"name\" : \"Jack\", \"age\" : 27 } { \"name\" : \"Anna\", ";
+int
+test_issue_27(void)
+{
+	const char *js = "{ \"name\" : \"Jack\", \"age\" : 27 } { \"name\" : \"Anna\", ";
 	check(parse(js, JSMN_ERROR_PART, 8));
 	return 0;
 }
 
-int test_input_length(void) {
+int
+test_input_length(void)
+{
 	const char *js;
-	int r;
+	int         r;
 	jsmn_parser p;
-	jsmntok_t tokens[10];
+	jsmntok_t   tokens[10];
 
 	js = "{\"a\": 0}garbage";
 
 	jsmn_init(&p);
 	r = jsmn_parse(&p, js, 8, tokens, 10);
 	check(r == 3);
-	check(tokeq(js, tokens, 3,
-				JSMN_OBJECT, -1, -1, 1,
-				JSMN_STRING, "a", 1,
-				JSMN_PRIMITIVE, "0"));
+	check(tokeq(js, tokens, 3, JSMN_OBJECT, -1, -1, 1, JSMN_STRING, "a", 1, JSMN_PRIMITIVE, "0"));
 	return 0;
 }
 
-int test_count(void) {
+int
+test_count(void)
+{
 	jsmn_parser p;
 	const char *js;
 
@@ -337,27 +289,24 @@ int test_count(void) {
 }
 
 
-int test_nonstrict(void) {
+int
+test_nonstrict(void)
+{
 #ifndef JSMN_STRICT
 	const char *js;
 	js = "a: 0garbage";
-	check(parse(js, 2, 2,
-				JSMN_PRIMITIVE, "a",
-				JSMN_PRIMITIVE, "0garbage"));
+	check(parse(js, 2, 2, JSMN_PRIMITIVE, "a", JSMN_PRIMITIVE, "0garbage"));
 
 	js = "Day : 26\nMonth : Sep\n\nYear: 12";
-	check(parse(js, 6, 6,
-				JSMN_PRIMITIVE, "Day",
-				JSMN_PRIMITIVE, "26",
-				JSMN_PRIMITIVE, "Month",
-				JSMN_PRIMITIVE, "Sep",
-				JSMN_PRIMITIVE, "Year",
-				JSMN_PRIMITIVE, "12"));
+	check(parse(js, 6, 6, JSMN_PRIMITIVE, "Day", JSMN_PRIMITIVE, "26", JSMN_PRIMITIVE, "Month", JSMN_PRIMITIVE,
+	            "Sep", JSMN_PRIMITIVE, "Year", JSMN_PRIMITIVE, "12"));
 #endif
 	return 0;
 }
 
-int main(void) {
+int
+main(void)
+{
 	test(test_empty, "test for a empty JSON objects/arrays");
 	test(test_object, "test for a JSON objects");
 	test(test_array, "test for a JSON arrays");
